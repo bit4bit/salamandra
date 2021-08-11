@@ -7,7 +7,7 @@ lazy val root = project
     version := "0.1.0",
 
     scalaVersion := scala3Version,
-
+    Compile / scalacOptions += "-Xfatal-warnings",
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
-    scalafixDependencies in ThisBuild += "org.scalalint" %% "rules" % "0.1.4"
+    ThisBuild / scalafixDependencies  += "org.scalalint" %% "rules" % "0.1.4"
   )

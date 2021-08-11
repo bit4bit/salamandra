@@ -1,4 +1,6 @@
-@main def hello: Unit = 
+case class Foo(i: Int)
+
+@main def hello: Unit =
   println("Hello world!")
   println(msg)
 
