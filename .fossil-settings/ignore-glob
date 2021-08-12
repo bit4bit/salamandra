@@ -90,6 +90,7 @@ project/boot/
 project/plugins/project/a
 project/target/
 project/dist/
+project/project
 .history
 .cache
 .lib/
