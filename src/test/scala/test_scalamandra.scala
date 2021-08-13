@@ -17,6 +17,32 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
     server.stop()
   }
 
+  it should "respond method common.server.version" in {
+    val resp = requests.post("http://localhost:8099/",
+      data = ujson.Obj("method" -> "common.server.version", "params" -> Seq()),
+      headers = Map(
+        "Content-Type" -> "application/json"
+      )
+    )
+
+    val data = ujson.read(resp.text())
+    assert(data("id").num == 1)
+    assert(data("result").arr(0).str == "0.1.0")
+  }
+
+  it should "respond method common.server.list" in {
+    val resp = requests.post("http://localhost:8099/",
+      data = ujson.Obj("method" -> "common.server.list", "params" -> Seq()),
+      headers = Map(
+        "Content-Type" -> "application/json"
+      )
+    )
+
+    val data = ujson.read(resp.text())
+    assert(data("id").num == 1)
+    assert(data("result").arr(0).str == "scalamandra")
+  }
+
   it should "respond options" in {
     val urls = Seq(
       "/test",

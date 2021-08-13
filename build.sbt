@@ -9,6 +9,7 @@ lazy val root = project
     scalaVersion := scala3Version,
     Compile / scalacOptions += "-Xfatal-warnings",
     Compile / scalacOptions += "-Ytasty-reader",
+    Compile / scalacOptions += "-deprecation",
     Test / logBuffered := false,
     libraryDependencies ++= Seq(
       "com.novocode" % "junit-interface" % "0.11" % "test",
