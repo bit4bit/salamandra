@@ -1,7 +1,10 @@
-case class Foo(i: Int)
+package app
 
-@main def hello: Unit =
-  println("Hello world!")
-  println(msg)
+object ScalamandraApplication extends cask.MainRoutes {
+  @cask.route("/:path", methods = Seq("options"))
+  def options(path: String) = {
+    cask.Response("", statusCode = 204)
+  }
 
-def msg = "I was compiled by Scala 3. :)"
+  initialize()
+}
