@@ -31,6 +31,8 @@ trait Model {
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
     schema.fields.map { case (name, field) =>
       (name, field.initial_value())
+    }.filter { case (name, field) =>
+        fieldsNames contains name
     }.toMap
   }
 }

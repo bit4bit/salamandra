@@ -15,7 +15,7 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
     }
 
     val p1 = new Person()
-    val defaults = p1.defaults_get(Seq("name"))
+    val defaults = p1.defaults_get(Seq("name", "age"))
     assert(defaults("name").str == "Yeah")
     assert(defaults("age").int == 16)
   }
