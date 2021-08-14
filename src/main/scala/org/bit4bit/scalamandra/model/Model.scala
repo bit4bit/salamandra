@@ -28,6 +28,10 @@ trait Model {
 
   def scheme(schema: Schema): Unit
 
+  def field_(name: String): Field = {
+    schema.fields(name)
+  }
+
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
     schema.fields.map { case (name, field) =>
       (name, field.initial_value())

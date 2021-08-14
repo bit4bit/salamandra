@@ -4,6 +4,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.Map
 
 trait Field {
+  // access and update internal value
+  def value: Value
+  def value_=(v: Any): Unit
+
   def initial_value(): Value
 
   def definition(): Field.Definition
@@ -15,6 +19,18 @@ object Field {
   }
 
   case class Char(name: String, default: String) extends Field {
+    var internal: Value = Value.Str(default)
+
+    def value = internal
+    def value_=(v: Any): Unit = {
+      v match {
+        case vs: String =>
+          internal = Value.Str(vs)
+        case _ =>
+          throw new IllegalArgumentException("can't handle type")
+      }
+    }
+    
     override def initial_value(): Value = {
       Value.Str(default)
     }
@@ -25,6 +41,19 @@ object Field {
   }
 
   case class Int(name: String, default: Integer) extends Field {
+    private var internal: Value = Value.Int(default)
+
+    def value = internal
+    def value_=(v: Any): Unit = {
+      v match {
+        case vs: Integer =>
+          internal = Value.Int(vs)
+        case _ =>
+          throw new IllegalArgumentException("can't handle type")
+      }
+    }
+
+
     override def initial_value(): Value = {
       Value.Int(default)
     }
