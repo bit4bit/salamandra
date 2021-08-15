@@ -7,8 +7,12 @@ trait Model {
 
   def scheme(schema: Schema): Unit
 
-  def field_(name: String): Field = {
+  def field(name: String): Field = {
     schema.fields(name)
+  }
+
+  def value(name: String): Value = {
+    return schema.fields(name).value
   }
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {

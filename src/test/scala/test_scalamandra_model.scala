@@ -29,9 +29,9 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
     }
 
     val p1 = new Person()
-    assert(p1.field_("name").value.str == "Yeah")
-    p1.field_("name").value = "Bob"
-    assert(p1.field_("name").value.str == "Bob")
+    assert(p1.field("name").value.str == "Yeah")
+    p1.field("name").value = "Bob"
+    assert(p1.field("name").value.str == "Bob")
   }
 
   it should "definition fields" in {
@@ -47,8 +47,8 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
     assert(definitions("name")._type == "char")
   }
 
-  /*
-  it should "declare rpc functions" in {
+
+  it should "declare and dispatch rpc functions" in {
     class Person extends model.Model {
       override def scheme(schema: model.Schema): Unit = {
         schema.Int("age", default = 16)
@@ -63,8 +63,8 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
     }
 
     val p = new Person()
-    val dispatch = new RPCDispatch()
-    dispatch.register(p)
-    assert(dispatcher.dispatch("dead", 30).int == 46)
-  }*/
+    val rpc = new RPC()
+    rpc.register(p)
+    assert(rpc.execute("dead", 30).int == 46)
+  }
 }

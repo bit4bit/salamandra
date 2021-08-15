@@ -10,6 +10,7 @@ sealed trait Value {
     case Value.Int(value) => value
     case _ => throw Value.InvalidData(this, "Expected Value.Int")
   }
+
 }
 
 object Value {

@@ -19,7 +19,7 @@ object Field {
     var internal: Value = Value.Str(default)
 
     def value = internal
-    def value_=(v: Any): Unit = {
+    def value_=(v: String): Unit = {
       v match {
         case vs: String =>
           internal = Value.Str(vs)
