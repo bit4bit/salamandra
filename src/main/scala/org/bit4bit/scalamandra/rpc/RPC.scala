@@ -20,7 +20,9 @@ import org.bit4bit.scalamandra.model.Model
 // con asInstanceOf[Type]
 
 class RPC {
-  val handler_of = Map.empty[String, Handler]
+  type HandlerMap = scala.collection.mutable.HashMap[String, Handler]
+
+  val handler_of: HandlerMap = new HandlerMap
 
   def register(handler: Handler): Unit = {
     handler.rpc_register(this)

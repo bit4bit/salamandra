@@ -1,21 +1,10 @@
 package org.bit4bit.scalamandra.model
 
 import org.bit4bit.scalamandra.Value
+import org.bit4bit.scalamandra.rpc
 
-trait Model {
+class Model {
   val schema = new Schema()
-
-  scheme(schema)
-
-  def scheme(schema: Schema): Unit
-
-  def field(name: String): Field = {
-    schema.fields(name)
-  }
-
-  def value(name: String): Value = {
-    return schema.fields(name).value
-  }
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
     schema.fields.map { case (name, field) =>
@@ -32,5 +21,26 @@ trait Model {
         (name, field.definition())
     }.toMap
   }
+
+  def field(name: String): Field = {
+    schema.fields(name)
+  }
+
+  def value(name: String): Value = {
+    return schema.fields(name).value
+  }
 }
 
+object Model extends Model with rpc.Handler  {
+  def rpc_register(decl: rpc.RPC): Unit = {
+    decl.callback("fields_get", this)
+    decl.callback("default_get", this)
+  }
+
+  def rpc_handler(method: String, args: Seq[Value]): Value = {
+    Value.Int(0)
+  }
+  def rpc_handler(obj: Any, method: String, args: Seq[Value]): Value = {
+    Value.Int(0)
+  }
+}
