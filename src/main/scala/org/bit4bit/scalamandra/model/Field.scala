@@ -14,6 +14,7 @@ trait Field {
 
 object Field {
   //https://hg.tryton.org/trytond/file/tip/trytond/model/fields/field.py#l436
+  // * name: in python is class attribute name
   case class Definition(name: String, _type: String) {
   }
 

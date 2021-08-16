@@ -3,7 +3,7 @@ package org.bit4bit.scalamandra.model
 import org.bit4bit.scalamandra.Value
 import org.bit4bit.scalamandra.rpc
 
-class Model {
+class Model extends rpc.Handler {
   val schema = new Schema()
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
@@ -29,18 +29,39 @@ class Model {
   def value(name: String): Value = {
     return schema.fields(name).value
   }
-}
 
-object Model extends Model with rpc.Handler  {
   def rpc_register(decl: rpc.RPC): Unit = {
     decl.callback("fields_get", this)
-    decl.callback("default_get", this)
   }
 
-  def rpc_handler(method: String, args: Seq[Value]): Value = {
-    Value.Int(0)
+  def rpc_handler(method: String, args: Seq[rpc.Argument]): rpc.Reply = {
+    method match {
+      case "fields_get" =>
+        val fargs: Seq[String] = args(0).arr.map { argument => argument.str }
+        return Model.FieldsDefinitionsReply(this.fields_get(fargs))
+    }
   }
-  def rpc_handler(obj: Any, method: String, args: Seq[Value]): Value = {
-    Value.Int(0)
+
+  def rpc_handler(obj: Any, method: String, args: Seq[rpc.Argument]): rpc.Reply = {
+    rpc.Reply.Empty()
+  }
+}
+
+
+
+object Model extends Model {
+  case class FieldsDefinitionsReply(definitions: Map[String, Field.Definition]) extends rpc.Reply {
+    def json(encoder: rpc.JSONEncoder): String = {
+      val obj = encoder.buildObject()
+
+      definitions.foreach{ case (key, definition) =>
+        val dobj = encoder.buildObject()
+        dobj.set("name", definition.name)
+        dobj.set("type", definition._type)
+        encoder.mergeObject(obj, key, dobj)
+      }
+
+      obj.render()
+    }
   }
 }

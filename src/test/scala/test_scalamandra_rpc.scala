@@ -14,17 +14,17 @@ class ScalamandraRPCSpec extends TestCaseSpec {
         decl.callback("sum", this)
       }
 
-      def rpc_handler(method: String, args: Seq[Value]): Value = {
+      def rpc_handler(method: String, args: Seq[rpc.Argument]): rpc.Reply = {
         method match {
           case "sum" =>
-            return Value.Int(args(0).int + args(1).int)
+            return rpc.Reply.Int((args(0).int + args(1).int))
         }
       }
 
-      def rpc_handler(obj: Any, method: String, args: Seq[Value]): Value = {
+      def rpc_handler(obj: Any, method: String, args: Seq[rpc.Argument]): rpc.Reply = {
         method match {
           case "sum" =>
-            return Value.Int(obj.asInstanceOf[CalcVal].num + args(0).int)
+            return rpc.Reply.Int(obj.asInstanceOf[CalcVal].num + args(0).int)
         }
       }
     }
@@ -32,10 +32,28 @@ class ScalamandraRPCSpec extends TestCaseSpec {
     val srv = new rpc.RPC()
     srv.register(Calc)
 
-    assert(srv.execute("sum", Seq(Value.Int(30), Value.Int(16))).int == 46)
+    assert(srv.execute("sum", Seq(rpc.Argument.Int(30), rpc.Argument.Int(16))).int == 46)
 
     val c = CalcVal(33)
     assert(c.num == 33)
-    assert(srv.executeInstance(c, "sum", Seq(Value.Int(30))).int == 63)
+    assert(srv.executeInstance(c, "sum", Seq(rpc.Argument.Int(30))).int == 63)
+  }
+
+  it should "render definition fields" in {
+    object Person extends model.Model {
+      schema.Char("bobname", default = "Yeah")
+    }
+
+    val srv = new rpc.RPC()
+    srv.register(Person)
+
+    val encoder = new rpc.JSONEncoderUsingUjson()
+
+    assert(srv.execute("fields_get", Seq(
+      rpc.Argument.Arr(
+        Seq(rpc.Argument.Str("bobname"))
+      )
+    )
+    ).json(encoder) == """{"bobname":{"name":"bobname","type":"char"}}""")
   }
 }
