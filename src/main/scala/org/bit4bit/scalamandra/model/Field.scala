@@ -1,5 +1,7 @@
 package org.bit4bit.scalamandra.model
 
+import org.bit4bit.scalamandra.Value
+
 trait Field {
   // access and update internal value
   def value: Value
@@ -19,7 +21,7 @@ object Field {
     var internal: Value = Value.Str(default)
 
     def value = internal
-    def value_=(v: String): Unit = {
+    def value_=(v: Any): Unit = {
       v match {
         case vs: String =>
           internal = Value.Str(vs)

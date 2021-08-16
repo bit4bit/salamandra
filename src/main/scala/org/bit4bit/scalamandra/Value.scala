@@ -1,6 +1,6 @@
-package org.bit4bit.scalamandra.model
+package org.bit4bit.scalamandra
 
-sealed trait Value {
+trait Value {
   def str = this match {
     case Value.Str(value) => value
     case _ => throw Value.InvalidData(this, "Expected Value.Str")

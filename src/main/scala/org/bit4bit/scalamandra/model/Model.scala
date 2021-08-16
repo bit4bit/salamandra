@@ -1,5 +1,7 @@
 package org.bit4bit.scalamandra.model
 
+import org.bit4bit.scalamandra.Value
+
 trait Model {
   val schema = new Schema()
 

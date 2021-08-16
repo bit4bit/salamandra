@@ -46,25 +46,4 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
     assert(definitions("name").name == "name")
     assert(definitions("name")._type == "char")
   }
-
-
-  it should "declare and dispatch rpc functions" in {
-    class Person extends model.Model {
-      override def scheme(schema: model.Schema): Unit = {
-        schema.Int("age", default = 16)
-      }
-
-      override def rpc(decl: Any): Unit = {
-        decl.callback(RPCFunction(this, "dead"))
-      }
-
-      def dead(years: Integer): Value = {
-      }
-    }
-
-    val p = new Person()
-    val rpc = new RPC()
-    rpc.register(p)
-    assert(rpc.execute("dead", 30).int == 46)
-  }
 }

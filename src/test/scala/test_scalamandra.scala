@@ -18,6 +18,7 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.server.version" in {
+
     val resp = requests.post("http://localhost:8099/",
       data = ujson.Obj("method" -> "common.server.version", "params" -> Seq()),
       headers = Map(
@@ -31,6 +32,7 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.server.list" in {
+
     val resp = requests.post("http://localhost:8099/",
       data = ujson.Obj("method" -> "common.server.list", "params" -> Seq()),
       headers = Map(
