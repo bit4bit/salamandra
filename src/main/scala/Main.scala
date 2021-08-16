@@ -12,9 +12,9 @@ object ScalamandraApplication extends cask.MainRoutes {
   def root(method: String, params: ujson.Value = Seq()) = {
     method match {
       case "common.server.list" =>
-        RPCResponseCommonServerList(Seq("scalamandra")).asJson()
+        RPCResponseCommonServerList(Seq("scalamandra")).toJson
       case "common.server.version" =>
-        RPCResponseCommonServerVersion("0.1.0").asJson()
+        RPCResponseCommonServerVersion("0.1.0").toJson
     }
   }
 
