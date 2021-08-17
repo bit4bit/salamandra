@@ -13,7 +13,7 @@ case class RPCResponseCommonServerVersion(version: String) {
   def toJson: ujson.Value = {
     ujson.Obj(
       "id" -> 1,
-      "result" -> Seq(version),
+      "result" -> version,
     )
   }
 }

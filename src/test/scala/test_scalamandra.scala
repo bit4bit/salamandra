@@ -28,7 +28,7 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
 
     val data = ujson.read(resp.text())
     assert(data("id").num == 1)
-    assert(data("result").arr(0).str == "0.1.0")
+    assert(data("result").str == "0.1.0")
   }
 
   it should "respond method common.server.list" in {
