@@ -8,18 +8,12 @@ trait JSONEncoder {
 trait JSONObject {
   def set(key: String, value: String): Unit
   def render(): String
-
-  // MACHETE(bit4bit) el mismo dilema como usar tipos
-  // y evitar el uso de Any?
-  def internal(): Any
 }
 
 class JSONObjectUsingUjson(var obj: ujson.Value) extends JSONObject {
   def set(key: String, value: String) = {
     obj(key) = value
   }
-
-  def internal(): Any = obj
 
   def render(): String = obj.render()
 }
@@ -30,6 +24,7 @@ class JSONEncoderUsingUjson extends JSONEncoder {
   }
 
   def mergeObject(a: JSONObject, atKey: String, b: JSONObject): Unit = {
-    a.internal().asInstanceOf[ujson.Value].obj(atKey) = b.internal().asInstanceOf[ujson.Value]
+    // TODO(bit4bit) casteo dinamico, como verificarlo estaticamente?
+    a.asInstanceOf[JSONObjectUsingUjson].obj(atKey) = b.asInstanceOf[JSONObjectUsingUjson].obj
   }
 }
