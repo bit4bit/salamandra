@@ -27,11 +27,23 @@ case class RPCResponseSession(id: String) {
   }
 }
 
-case class RPCResponseError(exception: String, name: String, message: String, _type: String) {
+case class RPCResponseError(exception: String, args: Seq[Any]) {
   def toJson: ujson.Value = {
+    val error_args = ujson.Arr()
+    val error = ujson.Arr(exception, error_args)
+
+    args.foreach { item =>
+      item match {
+        case e: String => error_args.arr.append(e)
+        case e: Int => error_args.arr.append(e)
+        case _ =>
+          throw new RuntimeException(s"not known how to handle $item")
+      }
+    }
+
     ujson.Obj(
       "id" -> 1,
-      "error" -> ujson.Arr(exception, ujson.Arr(name, message, _type))
+      "error" -> error
     )
   }
 }

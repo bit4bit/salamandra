@@ -46,6 +46,9 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.db.login first phase" in {
+    res.Module.register()
+
+
     val resp = requests.post("http://localhost:8099/test/",
       data = ujson.Obj(
         "id" -> 1,
@@ -58,6 +61,7 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
     )
 
     val data: ujson.Value = ujson.read(resp.text())
+    println(data)
     assert(data("id").num == 1)
     assert(data("error").arr(0).str == "LoginException")
     // name
@@ -67,6 +71,8 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.db.login complete phase" in {
+    res.Module.register()
+
     val resp = requests.post("http://localhost:8099/test/",
       data = ujson.Obj(
         "id" -> 1,
@@ -110,5 +116,11 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
       assert(success.statusCode == 204)
     }
 
+  }
+
+  it should "get res user" in {
+    res.Module.register()
+
+    assert(pool.Pool.get("res.user") == res.User)
   }
 }
