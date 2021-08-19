@@ -7,7 +7,7 @@ import org.bit4bit.scalamandra.model.Model
 object Pool {
   val model = Map.empty[String, Model]
 
-  def get(model_name: String): Model = {
-    return model(model_name)
+  def get[T <: Model](model_name: String): T = {
+    return model(model_name).asInstanceOf[T]
   }
 }

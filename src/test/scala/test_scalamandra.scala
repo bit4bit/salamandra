@@ -121,6 +121,6 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   it should "get res user" in {
     res.Module.register()
 
-    assert(pool.Pool.get("res.user") == res.User)
+    assert(pool.Pool.get[res.User.type]("res.user") == res.User)
   }
 }

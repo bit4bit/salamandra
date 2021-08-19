@@ -8,11 +8,14 @@ class ScalamandraPoolSpec extends TestCaseSpec {
     object Person extends model.Model {
       schema.Char("name", default = "Yeah")
       schema.Int("age", default = 16)
+
+      def login = true
     }
     pool.Pool.model("test.person") = Person
 
-    val person = pool.Pool.get("test.person")
+    val person = pool.Pool.get[Person.type]("test.person")
     assert(person == Person)
     assert(person.field("name").value.str == "Yeah")
+    assert(person.login == true)
   }
 }
