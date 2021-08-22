@@ -3,8 +3,10 @@ package org.bit4bit.scalamandra.model
 import org.bit4bit.scalamandra.Value
 
 trait Field {
+  type VALUE
+
   // access and update internal value
-  def value: Value
+  def value: VALUE
   def value_=(v: Any): Unit
 
   def initial_value(): Value
@@ -19,9 +21,11 @@ object Field {
   }
 
   case class Char(name: String, default: String) extends Field {
+    type VALUE = String
+
     var internal: Value = Value.Str(default)
 
-    def value = internal
+    def value = internal.str
     def value_=(v: Any): Unit = {
       v match {
         case vs: String =>
@@ -41,9 +45,11 @@ object Field {
   }
 
   case class Int(name: String, default: Integer) extends Field {
+    type VALUE = Integer
+
     private var internal: Value = Value.Int(default)
 
-    def value = internal
+    def value = internal.int
     def value_=(v: Any): Unit = {
       v match {
         case vs: Integer =>

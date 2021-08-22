@@ -15,7 +15,7 @@ class ScalamandraPoolSpec extends TestCaseSpec {
 
     val person = pool.Pool.get[Person.type]("test.person")
     assert(person == Person)
-    assert(person.field("name").value.str == "Yeah")
+    assert(person.field("name").value == "Yeah")
     assert(person.login == true)
   }
 }

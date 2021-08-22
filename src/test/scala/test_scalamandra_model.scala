@@ -22,9 +22,9 @@ class ScalamandraModelSpec extends TestCaseSpec with BeforeAndAfter {
       schema.Char("name", default = "Yeah")
     }
 
-    assert(Person.field("name").value.str == "Yeah")
+    assert(Person.field("name").value == "Yeah")
     Person.field("name").value = "Bob"
-    assert(Person.field("name").value.str == "Bob")
+    assert(Person.field("name").value == "Bob")
   }
 
   it should "definition fields" in {

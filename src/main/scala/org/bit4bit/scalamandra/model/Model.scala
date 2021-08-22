@@ -26,10 +26,6 @@ class Model extends rpc.Handler {
     schema.fields(name)
   }
 
-  def value(name: String): Value = {
-    return schema.fields(name).value
-  }
-
   def rpc_register(decl: rpc.RPC): Unit = {
     decl.callback("fields_get", this)
   }
