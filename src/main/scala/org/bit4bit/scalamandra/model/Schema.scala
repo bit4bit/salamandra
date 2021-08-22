@@ -14,4 +14,10 @@ class Schema {
   def Int(name: String, default: Integer = 0): Unit = {
     fields(name) = Field.Int(name = name, default = default)
   }
+
+  def from(schema: Schema): Unit = {
+    for((name, field) <- schema.fields) {
+      fields(name) = field
+    }
+  }
 }
