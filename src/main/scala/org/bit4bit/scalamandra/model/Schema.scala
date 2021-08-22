@@ -15,9 +15,9 @@ class Schema {
     fields(name) = Field.Int(name = name, default = default)
   }
 
-  def from(schema: Schema): Unit = {
+  def updateFromSchema(schema: Schema): Unit = {
     for((name, field) <- schema.fields) {
-      fields(name) = field
+      fields(name) = field.copy()
     }
   }
 }
