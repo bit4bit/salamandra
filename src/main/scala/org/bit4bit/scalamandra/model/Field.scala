@@ -2,7 +2,7 @@ package org.bit4bit.scalamandra.model
 
 import org.bit4bit.scalamandra.Value
 
-trait Field extends Cloneable {
+trait Field {
   type VALUE
 
   // access and update internal value
