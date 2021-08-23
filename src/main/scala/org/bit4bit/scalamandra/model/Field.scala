@@ -5,6 +5,7 @@ import org.bit4bit.scalamandra.Value
 trait Field {
   type VALUE
 
+  def sql_type: String
   // access and update internal value
   def value: VALUE
   def value_=(v: Any): Unit
@@ -43,6 +44,8 @@ object Field {
 
     var internal: Value = Value.Str(default)
 
+    def sql_type = "VARCHAR(255)"
+
     def value = internal.str
     def value_=(v: Any): Unit = {
       v match {
@@ -68,6 +71,8 @@ object Field {
     type VALUE = Integer
 
     private var internal: Value = Value.Int(default)
+
+    def sql_type = "INTEGER"
 
     def value = internal.int
     def value_=(v: Any): Unit = {

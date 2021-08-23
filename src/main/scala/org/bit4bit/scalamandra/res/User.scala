@@ -15,12 +15,15 @@ object User extends model.Model {
       return 1
     }
   }
+
+  override def register(model_name: String): Unit = {
+  }
 }
 
 // TODO(bit4bit) usamos esto como punto de entrada
 object Module {
   def register(): Unit = {
-    pool.Pool.model("res.user") = User
+    pool.Pool.register("res.user", User)
   }
 }
 

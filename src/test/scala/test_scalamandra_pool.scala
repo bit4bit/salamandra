@@ -10,8 +10,11 @@ class ScalamandraPoolSpec extends TestCaseSpec {
       schema.Int("age", default = 16)
 
       def login = true
+
+      override def register(model_name: String): Unit = {
+      }
     }
-    pool.Pool.model("test.person") = Person
+    pool.Pool.register("test.person", Person)
 
     val person = pool.Pool.get[Person.type]("test.person")
     assert(person == Person)

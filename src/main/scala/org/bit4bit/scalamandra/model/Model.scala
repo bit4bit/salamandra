@@ -3,7 +3,11 @@ package org.bit4bit.scalamandra.model
 import org.bit4bit.scalamandra.Value
 import org.bit4bit.scalamandra.rpc
 
-class Model extends rpc.Handler {
+trait ModelPooleable {
+  def register(model_name: String): Unit
+}
+
+class Model extends rpc.Handler with ModelPooleable {
   val schema = new Schema()
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
@@ -25,6 +29,8 @@ class Model extends rpc.Handler {
   def field(name: String): Field = {
     schema.fields(name)
   }
+
+  override def register(model_name: String): Unit  = ???
 
   def rpc_register(decl: rpc.RPC): Unit = {
     decl.callback("fields_get", this)
