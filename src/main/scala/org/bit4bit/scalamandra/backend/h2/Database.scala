@@ -4,7 +4,11 @@ import scalikejdbc._
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-object Database {
+import org.bit4bit.scalamandra.backend.TableColumn
+
+// http://scalikejdbc.org/documentation/sql-interpolation.html
+
+object Database extends org.bit4bit.scalamandra.backend.Database {
   val logger = LoggerFactory.getLogger("database")
 
   Class.forName("org.h2.Driver")
@@ -19,11 +23,29 @@ object Database {
     SQL(query).execute().apply()
   }
 
-  def add_column(table_name: String, column_name: String, column_type: String)(implicit s: DBSession = AutoSession) = {
+  def add_column(table_name: String, column_name: String, column_type: String): Unit = {
     val query = s"ALTER TABLE ${table_name} ADD COLUMN ${column_name} ${column_type}"
 
     logger.info(query)
 
     SQL(query).execute().apply()
+  }
+
+  def column_definitions(table_name: String): Map[String, TableColumn] = {
+    SQL(s"show columns from ${table_name}").map{rs =>
+      val name = rs.string("field").toLowerCase
+      val notnull = rs.boolean("null") == false
+      val typePattern = "([a-z]+)\\((.*?)\\)".r
+      val default =  rs.stringOpt("default")
+      val typePattern(type_name, size) = rs.string("type").toLowerCase
+
+      (name,
+        TableColumn(
+          type_name = type_name,
+          size = size.toInt,
+          notnull = notnull,
+          default = default
+        ))
+    }.list().apply().toMap
   }
 }

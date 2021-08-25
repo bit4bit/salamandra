@@ -36,14 +36,18 @@ trait ModelSQL[A <: Model] extends ModelPooleable
 
   this: Model =>
 
+  implicit val database = backend.h2.Database
+
   def table_name: String = this.getClass.getName
   def table_handler(): backend.TableHandler = {
     // TODO(bit4bit) IoC
-    new backend.h2.TableHandler(table_name)
+    new backend.h2.TableHandler(table_name, database)
   }
 
   override def register(model_name: String) = {
     val table = table_handler()
+
+    table.create_table()
 
     // create columns on table
     this.schema.fields.foreach{ case (name, field) => table.add_column(name, field.sql_type)}
