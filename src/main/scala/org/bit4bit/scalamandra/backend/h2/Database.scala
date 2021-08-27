@@ -48,4 +48,14 @@ object Database extends org.bit4bit.scalamandra.backend.Database {
         ))
     }.list().apply().toMap
   }
+
+  def insert(table_name: String, values: Map[String, Any]): Long = {
+    // concatenar columnas -> ${a},$
+    val columns = values.keys.map(k => s"${k}").mkString(",")
+    val placeholders = List.fill(values.keys.size)("?").mkString(",")
+    val parameters = values.values.toSeq
+    val query = s"INSERT INTO ${table_name} (${columns}) VALUES(${placeholders})"
+
+    SQL(query).bind(parameters: _*).updateAndReturnGeneratedKey().apply()
+  }
 }

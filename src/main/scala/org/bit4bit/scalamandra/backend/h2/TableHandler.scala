@@ -15,4 +15,10 @@ class TableHandler(val table_name: String, val db: backend.Database) extends bac
   def column_definitions(): Map[String, backend.TableColumn] = {
     db.column_definitions(table_name)
   }
+
+  def create_records(vlist: Seq[Map[String, Any]]): Seq[Long] = {
+    vlist.map{values =>
+      db.insert(table_name, values)
+    }
+  }
 }
