@@ -18,6 +18,14 @@ trait Field {
     }
   }
 
+  def valueAsID: Long = {
+    value match {
+      case v: Long => v
+      case _ =>
+        throw new IllegalArgumentException("can't handle type")
+    }
+  }
+
   def valueAsString: String = {
     value match {
       case v: String => v
@@ -93,5 +101,33 @@ object Field {
     }
 
     def copy(): Int = Int(name, default = default)
+  }
+
+  case class ID(name: String, default: Long) extends Field {
+    type VALUE = Long
+
+    private var internal: Value = Value.ID(default)
+
+    def sql_type = "BIGINT"
+
+    def value = internal.id
+    def value_=(v: Any): Unit = {
+      v match {
+        case vs: Long =>
+          internal = Value.ID(vs)
+        case _ =>
+          throw new IllegalArgumentException("can't handle type")
+      }
+    }
+
+    override def initial_value(): Value = {
+      Value.ID(default)
+    }
+
+    override def definition(): Definition = {
+      Definition(name = name, _type = "int")
+    }
+
+    def copy(): ID = ID(name, default = default)
   }
 }

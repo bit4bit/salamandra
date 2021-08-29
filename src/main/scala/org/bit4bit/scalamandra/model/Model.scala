@@ -7,7 +7,7 @@ trait ModelPooleable {
   def register(model_name: String): Unit
 }
 
-class Model extends rpc.Handler with ModelPooleable {
+trait Model extends rpc.Handler with ModelPooleable {
   val schema = new Schema()
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {

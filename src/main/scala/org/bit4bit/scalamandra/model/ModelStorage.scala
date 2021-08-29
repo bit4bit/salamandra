@@ -2,8 +2,8 @@ package org.bit4bit.scalamandra.model
 
 import org.bit4bit.scalamandra.backend
 
-trait ModelStorage[A <: Model] {
-  this: Model =>
+trait ModelStorage[A <: Model] extends Model {
+
 
   // MACHETE(bit4bit) como no requerir esto para instanciar la clase
   // del companion object?
@@ -16,7 +16,7 @@ trait ModelStorage[A <: Model] {
       val model = make()
 
       // toda entidad lleva un identificador
-      model.schema.Int("id", default = 0)
+      model.schema.ID("id", default = 0)
 
       // actualizar desde el schema del companion object
       model.schema.updateFromSchema(parentSchema)
@@ -31,9 +31,8 @@ trait ModelStorage[A <: Model] {
   }
 }
 
-trait ModelSQL[A <: Model] extends ModelPooleable
-    with ModelStorage[A] {
-
+abstract class ModelSQL[A <: Model] extends ModelStorage[A]
+    with ModelPooleable {
   this: Model =>
 
   implicit val database = backend.h2.Database
@@ -50,7 +49,17 @@ trait ModelSQL[A <: Model] extends ModelPooleable
     table.create_table()
 
     // create columns on table
-    this.schema.fields.foreach{ case (name, field) => table.add_column(name, field.sql_type)}
+    this.schema.fields.foreach{ case (name, field) => table.add_column(name, field.sql_type) }
+  }
 
+  override def create(vlist: Seq[Map[String, Any]]): Seq[A] = {
+    val table = table_handler()
+
+    val ids = table.create_records(vlist)
+    val vrecords: Seq[Map[String, Any]] = vlist.zipWithIndex.map{ case (values, index) =>
+      values + ("id" -> ids(index))
+    }
+
+    super.create(vrecords)
   }
 }

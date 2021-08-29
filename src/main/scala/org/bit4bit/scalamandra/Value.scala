@@ -11,6 +11,10 @@ trait Value {
     case _ => throw Value.InvalidData(this, "Expected Value.Int")
   }
 
+  def id = this match {
+    case Value.ID(value) => value
+    case _ => throw Value.InvalidData(this, "Expected Value.ID")
+  }
 }
 
 object Value {
@@ -20,4 +24,5 @@ object Value {
   
   case class Str(value: String) extends Value
   case class Int(value: Integer) extends Value
+  case class ID(value: Long) extends Value
 }

@@ -15,6 +15,10 @@ class Schema {
     fields(name) = Field.Int(name = name, default = default)
   }
 
+  def ID(name: String, default: Long = 0): Unit = {
+    fields(name) = Field.ID(name = name, default = default)
+  }
+
   def updateFromSchema(schema: Schema): Unit = {
     for((name, field) <- schema.fields) {
       fields(name) = field.copy()

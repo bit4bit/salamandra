@@ -31,6 +31,8 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
   }
 
   it should "create model persisted" in {
+    implicit val db = backend.h2.Database
+
     class Person extends model.Model {
       def newAge(): Int = {
         field("age").valueAsInt + 10
@@ -40,9 +42,7 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
         field("age").value = age
       }
     }
-    object Person extends model.Model
-        with model.ModelStorage[Person]
-        with model.ModelSQL[Person] {
+    object Person extends model.ModelSQL[Person] {
 
       def make(): Person = new Person()
       override def table_name = "test_person"
@@ -53,5 +53,9 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
 
     pool.Pool.register("test.person", Person)
     assert(Person.table_name == "test_person")
+
+    val p = Person.create(Seq(Map("name" -> "scala")))
+    assert(p(0).field("id").valueAsID > 0)
+    assert(p(0).field("name").valueAsString == "scala")
   }
 }
