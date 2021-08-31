@@ -21,4 +21,8 @@ class TableHandler(val table_name: String, val db: backend.Database) extends bac
       db.insert(table_name, values)
     }
   }
+
+  def find_by_field(name: String, value: Any, limit: Int): Seq[Map[String, Any]] = {
+    db.select_all(s"SELECT * FROM ${table_name} WHERE ${name} = ? LIMIT ${limit}", value)
+  }
 }

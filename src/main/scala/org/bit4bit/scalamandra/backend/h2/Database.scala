@@ -58,4 +58,10 @@ object Database extends org.bit4bit.scalamandra.backend.Database {
 
     SQL(query).bind(parameters: _*).updateAndReturnGeneratedKey().apply()
   }
+
+  def select_all(query: String, parameters: Any*): Seq[Map[String, Any]] = {
+    SQL(query).bind(parameters: _*).map(_.toMap()).list().apply().map{ row =>
+      row.map{ case (k, v) => k.toLowerCase -> v }
+    }
+  }
 }

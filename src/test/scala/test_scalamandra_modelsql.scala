@@ -58,4 +58,46 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
     assert(p(0).field("id").valueAsID > 0)
     assert(p(0).field("name").valueAsString == "scala")
   }
+
+  it should "reads model" in {
+    implicit val db = backend.h2.Database
+
+    class Person extends model.Model {
+      def newAge(): Int = {
+        field("age").valueAsInt + 10
+      }
+
+      def setAge(age: Int): Unit = {
+        field("age").value = age
+      }
+    }
+    object Person extends model.ModelSQL[Person] {
+
+      def make(): Person = new Person()
+      override def table_name = "test_person_read"
+
+
+      schema.Char("name", default = "Hoe")
+      schema.Int("age", default = 10)
+    }
+
+    pool.Pool.register("test.person.read", Person)
+    assert(Person.table_name == "test_person_read")
+
+    val p = Person.create(Seq(
+      Map("name" -> "scala"),
+      Map("name" -> "scala2")
+    ))
+    assert(p(0).field("id").valueAsID > 0)
+    assert(p(0).field("name").valueAsString == "scala")
+
+    val ps = Person.one_by_field("name", "scala2")
+    ps match {
+      case Some(ps) =>
+        assert(ps.field("id").valueAsID == p(1).field("id").valueAsID)
+        assert(ps.field("name").valueAsString == "scala2")
+      case None =>
+        fail("one by field")
+    }
+  }
 }

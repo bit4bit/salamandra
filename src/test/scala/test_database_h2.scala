@@ -55,4 +55,33 @@ class TestDatabaseH2 extends TestCaseSpec {
     assert(records(0) > 0)
     assert(records(1) > 0)
   }
+
+  it should "read record" in {
+    implicit val db = backend.h2.Database
+
+    class PersonH2 extends model.Model {
+    }
+    object PersonH2 extends model.ModelSQL[PersonH2]
+        with model.Model {
+
+      def make(): PersonH2 = new PersonH2()
+      override def table_name = "test_person_H2_read"
+
+      schema.Char("name", default = "Hoe")
+      schema.Int("age", default = 10)
+    }
+
+    pool.Pool.register("test.person.h2.read", PersonH2)
+    val table = PersonH2.table_handler()
+
+    table.create_records(Seq(
+      Map("name" -> "bob", "age" -> 16),
+      Map("name" -> "dylan", "age" -> 18)
+    ))
+
+    val records = table.find_by_field("name", "bob")
+    println(records)
+    assert(records.length > 0)
+    assert(records(0)("name") == "bob")
+  }
 }

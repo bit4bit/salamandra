@@ -29,6 +29,33 @@ trait ModelStorage[A <: Model] extends Model {
       model
     }
   }
+
+
+  def create_model(values: Map[String, Any]): A = {
+    val parentSchema = schema
+
+    val model = make()
+
+    // toda entidad lleva un identificador
+    schema.ID("id", default = 0)
+
+    // actualizar desde el schema del companion object
+    model.schema.updateFromSchema(parentSchema)
+
+    model.field("id").value = values("id") match {
+      case value: Integer => value.toLong
+      case _ =>
+        throw new Exception("unknown how to handle type of id")
+    }
+
+    val nvalues = values - "id"
+    // asignar valores a campos
+    for((key, value) <- nvalues) {
+      model.field(key).value = value
+    }
+
+    model
+  }
 }
 
 abstract class ModelSQL[A <: Model] extends ModelStorage[A]
@@ -61,5 +88,15 @@ abstract class ModelSQL[A <: Model] extends ModelStorage[A]
     }
 
     super.create(vrecords)
+  }
+
+  def one_by_field(name: String, value: Any): Option[A] = {
+    val table = table_handler()
+
+    val vlist = table.find_by_field(name, value, limit = 1)
+    if (vlist.length > 0)
+      Some(super.create_model(vlist(0)))
+    else
+      None
   }
 }
