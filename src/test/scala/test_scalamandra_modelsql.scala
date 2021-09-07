@@ -3,6 +3,8 @@ package org.bit4bit.scalamandra
 import org.scalatest._
 
 class ScalamandraModelSQLSpec extends TestCaseSpec {
+  implicit val db = new backend.h2.Database("scalamandra-test-persisted")
+
   it should "create model" in {
     class Person extends model.Model {
       def newAge(): Int = {
@@ -31,7 +33,6 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
   }
 
   it should "create model persisted" in {
-    implicit val db = backend.h2.Database
 
     class Person extends model.Model {
       def newAge(): Int = {
@@ -45,14 +46,14 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
     object Person extends model.ModelSQL[Person] {
 
       def make(): Person = new Person()
-      override def table_name = "test_person"
+      override def table_name = "test_person_persisted"
 
       schema.Char("name", default = "Hoe")
       schema.Int("age", default = 10)
     }
 
     pool.Pool.register("test.person", Person)
-    assert(Person.table_name == "test_person")
+    assert(Person.table_name == "test_person_persisted")
 
     val p = Person.create(Seq(Map("name" -> "scala")))
     assert(p(0).field("id").valueAsID > 0)
@@ -60,7 +61,6 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
   }
 
   it should "reads model" in {
-    implicit val db = backend.h2.Database
 
     class Person extends model.Model {
       def newAge(): Int = {

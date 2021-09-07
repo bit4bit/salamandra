@@ -7,15 +7,14 @@ import org.slf4j.LoggerFactory
 import org.bit4bit.scalamandra.backend.TableColumn
 
 // http://scalikejdbc.org/documentation/sql-interpolation.html
-
-object Database extends org.bit4bit.scalamandra.backend.Database {
-  val logger = LoggerFactory.getLogger("database")
+class Database(name: String) extends org.bit4bit.scalamandra.backend.Database {
+  val logger = LoggerFactory.getLogger(s"database:${name}")
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.singleton("jdbc:h2:mem:scalamandra", "user", "pass")
+  ConnectionPool.singleton(s"jdbc:h2:mem:${name}", "user", "pass")
   implicit val session = AutoSession
 
-  def create_table(table_name: String)(implicit s: DBSession = AutoSession) = {
+  def create_table(table_name: String): Unit = {
     val query = s"CREATE TABLE ${table_name} (id SERIAL NOT NULL PRIMARY KEY)"
 
     logger.info(query)
@@ -59,7 +58,7 @@ object Database extends org.bit4bit.scalamandra.backend.Database {
     SQL(query).bind(parameters: _*).updateAndReturnGeneratedKey().apply()
   }
 
-  def select_all(query: String, parameters: Any*): Seq[Map[String, Any]] = {
+  def select_all(query: String, parameters: Seq[Any]): Seq[Map[String, Any]] = {
     SQL(query).bind(parameters: _*).map(_.toMap()).list().apply().map{ row =>
       row.map{ case (k, v) => k.toLowerCase -> v }
     }

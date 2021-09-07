@@ -4,8 +4,9 @@ case class TableColumn(type_name: String, notnull: Boolean, size: Integer, defau
 
 
 trait Database {
+  def create_table(table_name: String): Unit
   def add_column(table_name: String, column_name: String, column_type: String): Unit
   def column_definitions(table_name: String): Map[String, TableColumn]
   def insert(table_name: String, values: Map[String, Any]): Long
-  def select_all(query: String, values: Any*): Seq[Map[String, Any]]
+  def select_all(query: String, values: Seq[Any]): Seq[Map[String, Any]]
 }

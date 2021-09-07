@@ -3,9 +3,9 @@ package org.bit4bit.scalamandra
 import org.scalatest._
 
 class TestDatabaseH2 extends TestCaseSpec {
-  it should "read scheme from table" in {
-    implicit val db = backend.h2.Database
+  implicit val db = new backend.h2.Database("scalamandra-test-h2")
 
+  it should "read scheme from table" in {
     class PersonH2 extends model.Model {
     }
     object PersonH2 extends model.ModelSQL[PersonH2]
@@ -30,8 +30,6 @@ class TestDatabaseH2 extends TestCaseSpec {
   }
 
   it should "create record" in {
-    implicit val db = backend.h2.Database
-
     class PersonH2 extends model.Model {
     }
     object PersonH2 extends model.ModelSQL[PersonH2]
@@ -57,8 +55,6 @@ class TestDatabaseH2 extends TestCaseSpec {
   }
 
   it should "read record" in {
-    implicit val db = backend.h2.Database
-
     class PersonH2 extends model.Model {
     }
     object PersonH2 extends model.ModelSQL[PersonH2]

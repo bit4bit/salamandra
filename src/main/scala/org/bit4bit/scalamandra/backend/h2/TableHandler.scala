@@ -4,7 +4,7 @@ import org.bit4bit.scalamandra.backend
 
 class TableHandler(val table_name: String, val db: backend.Database) extends backend.TableHandler {
 
-  def create_table() = Database.create_table(table_name)
+  def create_table() = db.create_table(table_name)
 
   def table_exists(): Boolean = false
 
@@ -23,6 +23,6 @@ class TableHandler(val table_name: String, val db: backend.Database) extends bac
   }
 
   def find_by_field(name: String, value: Any, limit: Int): Seq[Map[String, Any]] = {
-    db.select_all(s"SELECT * FROM ${table_name} WHERE ${name} = ? LIMIT ${limit}", value)
+    db.select_all(s"SELECT * FROM ${table_name} WHERE ${name} = ? LIMIT ${limit}", List(value))
   }
 }

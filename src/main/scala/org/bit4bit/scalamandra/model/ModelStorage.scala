@@ -58,11 +58,9 @@ trait ModelStorage[A <: Model] extends Model {
   }
 }
 
-abstract class ModelSQL[A <: Model] extends ModelStorage[A]
+abstract class ModelSQL[A <: Model](implicit database: backend.Database) extends ModelStorage[A]
     with ModelPooleable {
   this: Model =>
-
-  implicit val database = backend.h2.Database
 
   def table_name: String = this.getClass.getName
   def table_handler(): backend.TableHandler = {
