@@ -14,20 +14,27 @@ class Database(name: String) extends org.bit4bit.scalamandra.backend.Database {
   ConnectionPool.singleton(s"jdbc:h2:mem:${name}", "user", "pass")
   implicit val session = AutoSession
 
+  def name(): String = s"jdbc:h2:mem:${name}"
+
+  def build_table_handler(table_name: String): org.bit4bit.scalamandra.backend.TableHandler = {
+    new TableHandler(table_name, this)
+  }
+
   def create_table(table_name: String): Unit = {
-    val query = s"CREATE TABLE ${table_name} (id SERIAL NOT NULL PRIMARY KEY)"
+    val query = s"CREATE TABLE IF NOT EXISTS ${table_name} (id SERIAL NOT NULL PRIMARY KEY)"
 
     logger.info(query)
 
     SQL(query).execute().apply()
   }
 
-  def add_column(table_name: String, column_name: String, column_type: String): Unit = {
+  def add_column_if_not_exists(table_name: String, column_name: String, column_type: String): Unit = {
     val query = s"ALTER TABLE ${table_name} ADD COLUMN ${column_name} ${column_type}"
 
     logger.info(query)
-
-    SQL(query).execute().apply()
+    if (!(column_definitions(table_name) contains column_name)) {
+      SQL(query).execute().apply()
+    }
   }
 
   def column_definitions(table_name: String): Map[String, TableColumn] = {

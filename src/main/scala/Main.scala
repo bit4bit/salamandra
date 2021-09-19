@@ -37,7 +37,7 @@ object ScalamandraApplication extends cask.MainRoutes {
 
   def login(database_name: String, username: String, device_cookie: String, password: String) = {
     try {
-      val user_id = res.User.get_login(username, password)
+      /*val user_id = res.User.get_login(username, password)*/
       val session_id = "9759ea66a364c308b21a7ac5c3b0ea68cc98b6675034cbb21d4d78fc6736bf14"
       rpc.RPCResponseSession(session_id).toJson
     } catch {

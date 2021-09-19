@@ -9,7 +9,7 @@ class TableHandler(val table_name: String, val db: backend.Database) extends bac
   def table_exists(): Boolean = false
 
   def add_column(column_name: String, column_type: String) = {
-    db.add_column(table_name, column_name, column_type)
+    db.add_column_if_not_exists(table_name, column_name, column_type)
   }
 
   def column_definitions(): Map[String, backend.TableColumn] = {

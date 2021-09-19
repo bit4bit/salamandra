@@ -9,7 +9,7 @@ trait ModelStorage[A <: Model] extends Model {
   // del companion object?
   def make(): A
 
-  def create(vlist: Seq[Map[String, Any]]): Seq[A] = {
+  def populate_model(vlist: Seq[Map[String, Any]]): Seq[A] = {
     val parentSchema = schema
 
     vlist.map { values =>
@@ -55,46 +55,5 @@ trait ModelStorage[A <: Model] extends Model {
     }
 
     model
-  }
-}
-
-abstract class ModelSQL[A <: Model](implicit database: backend.Database) extends ModelStorage[A]
-    with ModelPooleable {
-  this: Model =>
-
-  def table_name: String = this.getClass.getName
-  def table_handler(): backend.TableHandler = {
-    // TODO(bit4bit) IoC
-    new backend.h2.TableHandler(table_name, database)
-  }
-
-  override def register(model_name: String) = {
-    val table = table_handler()
-
-    table.create_table()
-
-    // create columns on table
-    this.schema.fields.foreach{ case (name, field) => table.add_column(name, field.sql_type) }
-  }
-
-  override def create(vlist: Seq[Map[String, Any]]): Seq[A] = {
-    val table = table_handler()
-
-    val ids = table.create_records(vlist)
-    val vrecords: Seq[Map[String, Any]] = vlist.zipWithIndex.map{ case (values, index) =>
-      values + ("id" -> ids(index))
-    }
-
-    super.create(vrecords)
-  }
-
-  def one_by_field(name: String, value: Any): Option[A] = {
-    val table = table_handler()
-
-    val vlist = table.find_by_field(name, value, limit = 1)
-    if (vlist.length > 0)
-      Some(super.create_model(vlist(0)))
-    else
-      None
   }
 }

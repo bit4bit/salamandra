@@ -2,13 +2,12 @@ package org.bit4bit.scalamandra.model
 
 import org.bit4bit.scalamandra.Value
 import org.bit4bit.scalamandra.rpc
+import org.bit4bit.scalamandra.backend
 
-trait ModelPooleable {
-  def register(model_name: String): Unit
-}
-
-trait Model extends rpc.Handler with ModelPooleable {
+trait Model extends rpc.Handler {
   val schema = new Schema()
+
+  def register(model_name: String)(implicit db: backend.Database): Unit = ???
 
   def defaults_get(fieldsNames: Seq[String]): Map[String, Value] = {
     schema.fields.map { case (name, field) =>
@@ -29,8 +28,6 @@ trait Model extends rpc.Handler with ModelPooleable {
   def field(name: String): Field = {
     schema.fields(name)
   }
-
-  override def register(model_name: String): Unit  = ???
 
   def rpc_register(decl: rpc.RPC): Unit = {
     decl.callback("fields_get", this)

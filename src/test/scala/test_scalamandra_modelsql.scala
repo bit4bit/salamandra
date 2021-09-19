@@ -3,8 +3,6 @@ package org.bit4bit.scalamandra
 import org.scalatest._
 
 class ScalamandraModelSQLSpec extends TestCaseSpec {
-  implicit val db = new backend.h2.Database("scalamandra-test-persisted")
-
   it should "create model" in {
     class Person extends model.Model {
       def newAge(): Int = {
@@ -21,8 +19,8 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
       schema.Char("name", default = "Hoe")
       schema.Int("age", default = 10)
     }
-    
-    val p = Person.create(Seq(Map("name" -> "scala")))
+
+    val p = Person.populate_model(Seq(Map("name" -> "scala")))
     assert(p(0).field("id").value == 0, "has id field")
     assert(p(0).field("name").value == "scala")
     assert(p(0).field("age").value == 10)
@@ -33,8 +31,9 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
   }
 
   it should "create model persisted" in {
+    val db = new backend.h2.Database("scalamandra-test-persisted2")
 
-    class Person extends model.Model {
+    class PersonCreate extends model.Model {
       def newAge(): Int = {
         field("age").valueAsInt + 10
       }
@@ -43,26 +42,26 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
         field("age").value = age
       }
     }
-    object Person extends model.ModelSQL[Person] {
+    object PersonCreate extends model.ModelSQL[PersonCreate] {
 
-      def make(): Person = new Person()
+      def make(): PersonCreate = new PersonCreate()
       override def table_name = "test_person_persisted"
 
       schema.Char("name", default = "Hoe")
       schema.Int("age", default = 10)
     }
+    pool.Pool.register("test.person", PersonCreate)(db)
+    assert(PersonCreate.table_name == "test_person_persisted")
 
-    pool.Pool.register("test.person", Person)
-    assert(Person.table_name == "test_person_persisted")
-
-    val p = Person.create(Seq(Map("name" -> "scala")))
+    val p = PersonCreate.create(Seq(Map("name" -> "scala")))(db)
     assert(p(0).field("id").valueAsID > 0)
     assert(p(0).field("name").valueAsString == "scala")
   }
 
   it should "reads model" in {
+    val db = new backend.h2.Database("scalamandra-test-persisted3")
 
-    class Person extends model.Model {
+    class PersonRead extends model.Model {
       def newAge(): Int = {
         field("age").valueAsInt + 10
       }
@@ -71,27 +70,27 @@ class ScalamandraModelSQLSpec extends TestCaseSpec {
         field("age").value = age
       }
     }
-    object Person extends model.ModelSQL[Person] {
+    object PersonRead extends model.ModelSQL[PersonRead] {
 
-      def make(): Person = new Person()
+      def make(): PersonRead = new PersonRead()
       override def table_name = "test_person_read"
-
 
       schema.Char("name", default = "Hoe")
       schema.Int("age", default = 10)
     }
 
-    pool.Pool.register("test.person.read", Person)
-    assert(Person.table_name == "test_person_read")
+    pool.Pool.register("test.person.read", PersonRead)(db)
 
-    val p = Person.create(Seq(
+    assert(PersonRead.table_name == "test_person_read")
+
+    val p = PersonRead.create(Seq(
       Map("name" -> "scala"),
       Map("name" -> "scala2")
-    ))
+    ))(db)
     assert(p(0).field("id").valueAsID > 0)
     assert(p(0).field("name").valueAsString == "scala")
 
-    val ps = Person.one_by_field("name", "scala2")
+    val ps = PersonRead.one_by_field("name", "scala2")(db)
     ps match {
       case Some(ps) =>
         assert(ps.field("id").valueAsID == p(1).field("id").valueAsID)
