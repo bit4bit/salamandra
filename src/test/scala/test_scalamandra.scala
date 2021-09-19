@@ -9,6 +9,8 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
     .setHandler(app.ScalamandraApplication.defaultHandler)
     .build
 
+  implicit val db = app.ScalamandraApplication.database
+
   before {
     server.start()
   }
@@ -46,10 +48,6 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.db.login first phase" in {
-    implicit val db = new backend.h2.Database("scalamandra-test-h2")
-    pool.Pool.register("res.user", res.User)
-
-
     val resp = requests.post("http://localhost:8099/test/",
       data = ujson.Obj(
         "id" -> 1,
@@ -72,9 +70,7 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "respond method common.db.login complete phase" in {
-    implicit val db = new backend.h2.Database("scalamandra")
-
-    pool.Pool.register("res.user", res.User)
+    val p = res.User.create(Seq(Map("name" -> "admin", "login" -> "admin", "password" -> "admin")))
 
     val resp = requests.post("http://localhost:8099/test/",
       data = ujson.Obj(
@@ -122,9 +118,6 @@ class ScalamandraSpec extends TestCaseSpec with BeforeAndAfter {
   }
 
   it should "get res user" in {
-    implicit val db = new backend.h2.Database("scalamandra-test-h2")
-    pool.Pool.register("res.user", res.User)
-
     assert(pool.Pool.get[res.User.type]("res.user") == res.User)
   }
 }

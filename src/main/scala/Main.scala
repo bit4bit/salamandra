@@ -3,6 +3,9 @@ package app
 import org.bit4bit.scalamandra._
 
 object ScalamandraApplication extends cask.MainRoutes {
+  implicit val database = new backend.h2.Database("scalamandra-main")
+  pool.Pool.register("res.user", res.User)
+
   @cask.postJson("/:database_name/")
   def hrpc(database_name: String, id: Int, method: String, params: ujson.Value) = {
     method match {
@@ -37,7 +40,7 @@ object ScalamandraApplication extends cask.MainRoutes {
 
   def login(database_name: String, username: String, device_cookie: String, password: String) = {
     try {
-      /*val user_id = res.User.get_login(username, password)*/
+      val user_id = res.User.get_login(username, password)
       val session_id = "9759ea66a364c308b21a7ac5c3b0ea68cc98b6675034cbb21d4d78fc6736bf14"
       rpc.RPCResponseSession(session_id).toJson
     } catch {
